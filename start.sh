@@ -11,10 +11,6 @@ log_level="INFO" # INFO, DEBUG, ERROR
 
 build="${module_name}.jar"
 
-cd ${APP_HOME}/${main_module}/${module_name}
-
-./propertiesFileChecker.sh
-
 pid=`ps -ef | grep $build | grep java | grep $module_name | grep -v grep | awk '{print $2}'`
 
 if [ "${pid}" != "" ]  ## Process is currently running
@@ -44,10 +40,9 @@ else  ## No process running
 
   echo "Starting ${module_name} module..."
 
-  java -Dlog4j.configurationFile=./log4j2.xml -Dlog.path=${log_path} -Dmodule.name=${module_name} -Dlog.level=${log_level} -Dspring.config.location=file:${commonConfigurationFile},file:./application.properties -jar ${build} $(date '+%Y-%m-%d') 1>/dev/null 2>${log_path}/${module_name}.error &
+#   java -Xmx1024m -Xms256m -Dlog4j.configurationFile=./log4j2.xml -Dspring.config.location=file:./application.yml -jar $PNAME REMINDER_UTILITY duplicate
 
-#  java -Dlog4j.configurationFile=./log4j2.xml -Dspring.config.location=file:./application.yml -jar $build $current_date 
-
+  java -Dlog4j.configurationFile=./log4j2.xml -Dlog.level=${log_level} -Dlog.path=${log_path} -Dmodule.name=${module_name} -Dspring.config.location=file:./application.properties,file:${commonConfigurationFile} -jar ${build} $(date '+%Y-%m-%d') 1>/dev/null 2>${log_path}/${module_name}.error &
 
   ## check if process started successfully or not
 
@@ -62,8 +57,5 @@ else  ## No process running
     echo "$module_name process is started successfully with PID ${pid} ..."
 
   fi
-
+  
 fi
-
-# java -Dlog4j.configurationFile=./log4j2.xml -Dspring.config.location=file:./application.yml -jar $PNAME $current_date &
-
